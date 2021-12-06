@@ -33,7 +33,7 @@ def validate_data(age, investment_amount, intent_request):
     Validates the data provided by the user.
     """
 
-    # Validate that the user is over 18 years old
+    # Validate that the user is over 21 years old
     if age is not None:
 
         age = parse_int(age)
@@ -45,12 +45,11 @@ def validate_data(age, investment_amount, intent_request):
             )
        
 
-    # Validate the investment amount, it should be > 1000
+    # Validate the investment amount, it should be > 5000
     if investment_amount is not None:
         investment_amount = parse_int(
             investment_amount
-        )  
-    # Since parameters are strings it's important to cast values
+        )  # Since parameters are strings it's important to cast values
         if investment_amount <= 1000:
             return build_validation_result(
                 False,
@@ -115,15 +114,16 @@ def close(session_attributes, fulfillment_state, message):
 
 
 ### Intents Handlers ###
-def Cryptotrader(intent_request):
+def recommend_portfolio(intent_request):
     """
-    Performs dialog management and fulfillment for Trading bot.
+    Performs dialog management and fulfillment for recommending a portfolio.
     """
 
     first_name = get_slots(intent_request)["firstName"]
     age = get_slots(intent_request)["age"]
     investment_amount = get_slots(intent_request)["investmentAmount"]
     value = get_slots(intent_request)["value"]
+    decision = get_slots(intent_request)["decision"]
     source = intent_request["invocationSource"]
 
     if source == "DialogCodeHook":
@@ -131,7 +131,7 @@ def Cryptotrader(intent_request):
         # Use the elicitSlot dialog action to re-prompt
         # for the first violation detected.
 
-        ###  DATA VALIDATION CODE STARTS HERE ###
+        ### YOUR DATA VALIDATION CODE STARTS HERE ###
         validation_result = validate_data(age, investment_amount, intent_request)
         
         if not validation_result["isValid"]:
@@ -142,41 +142,47 @@ def Cryptotrader(intent_request):
                                 validation_result["message"]
                     )
                                 
-        ###  DATA VALIDATION CODE ENDS HERE ###
+        ### YOUR DATA VALIDATION CODE ENDS HERE ###
 
         # Fetch current session attibutes
         output_session_attributes = intent_request["sessionAttributes"]
 
         return delegate(output_session_attributes, get_slots(intent_request))
 
-    # Get the initial Crypro value recommendation
+    # Get the initial investment recommendation
 
-    ###  Crypro value RECOMMENDATION CODE STARTS HERE ###
+    ### YOUR FINAL INVESTMENT RECOMMENDATION CODE STARTS HERE ###
 
     if value == 'Ethereum':
-        initial_recommendation = ' Our Golden Cross support vector machine model at a price of $200.'
+        initial_recommendation = 'We recommend using our Golden Cross support vector machine model at a price of $200. Would you like to purchase this model?'
     if value == 'Bitcoin':
-        initial_recommendation =' Our Golden Cross support vector machine model at a price of $200.'
+        initial_recommendation ='We recommend using our Golden Cross support vector machine model at a price of $200. Would you like to purchase this model?'
 
-    
-    ###  Crypro value RECOMMENDATION CODE ENDS HERE ###
+    # Get the decision 
+
+    ### Decision code starts here###
+    if value == 'Yes':
+
+    ### YOUR FINAL INVESTMENT RECOMMENDATION CODE ENDS HERE ###
 
 
-    # Return a message with the initial recommendation based on the value.
+
+
+    # Return a message with the initial recommendation based on the risk level.
     return close(
         intent_request["sessionAttributes"],
         "Fulfilled",
         {
             "contentType": "PlainText",
-            "content": """{} thank you for answering;
-            based on value you selected, my recommendation is to purchase our Golden Cross Support vector machine model {}
+            "content": """{} thank you for your information;
+            based on the risk level you defined, my recommendation is to choose an investment portfolio with {}
             """.format(
                 first_name, initial_recommendation
             ),
         },
     )
 
- 
+
 ### Intents Dispatcher ###
 def dispatch(intent_request):
     """
@@ -186,8 +192,8 @@ def dispatch(intent_request):
     intent_name = intent_request["currentIntent"]["name"]
 
     # Dispatch to bot's intent handlers
-    if intent_name == "Cryptotrader":
-        return Cryptotrader(intent_request)
+    if intent_name == "RecommendPortfolio":
+        return recommend_portfolio(intent_request)
 
     raise Exception("Intent with name " + intent_name + " not supported")
 
