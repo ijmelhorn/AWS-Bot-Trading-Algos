@@ -1,0 +1,22 @@
+{
+  "messageVersion": "1.0",
+  "invocationSource": "DialogCodeHook",
+  "userId": "John",
+  "sessionAttributes": {},
+  "bot": {
+    "name": "Trading_bot",
+    "alias": "$LATEST",
+    "version": "$LATEST"
+  },
+  "outputDialogMode": "Text",
+  "currentIntent": {
+    "name": "Cryptotrader",
+    "slots": {
+      "firstName": "John",
+      "age": "70",
+      "value": "Ethereum",
+      "InvestmentAmount": "5000"
+    },
+    "confirmationStatus": "None"
+  }
+}
